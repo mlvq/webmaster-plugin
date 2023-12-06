@@ -1,0 +1,11 @@
+.preview-image {
+    max-width: 192px;
+    max-height: 192px;
+}
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+}
+.img-thumbnail {
+    border-radius: 1px;
+}

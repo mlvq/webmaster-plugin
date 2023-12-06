@@ -28,11 +28,13 @@ if (!class_exists('WEBMASTER')) :
         public function __construct() {
             require plugin_dir_path(__FILE__) . 'includes/activation.php';
             require plugin_dir_path(__FILE__) . 'includes/catalog-post.php';
+            require plugin_dir_path(__FILE__) . 'includes/taxonomy-settings.php';
+            require plugin_dir_path(__FILE__) . 'includes/admin-pages.php';
         }
 
         public function initialize() {
             add_action('wp_enqueue_scripts', array($this, 'load_assets'));
-            add_action('admin_menu', array($this, 'load_submenu'));
+            add_action('admin_menu', 'load_submenu');
         }
 
         public function load_assets() {
@@ -51,31 +53,6 @@ if (!class_exists('WEBMASTER')) :
                 1,
                 true
             );
-        }
-
-        public function load_submenu() {
-            global $submenu;
-            $menu_slug = "webmaster";
-            add_submenu_page(
-            'edit.php?post_type=catalog_type', //parent_slug
-            'Webmaster settings', // page_title
-            'Settings', // menu_title
-            'manage_options', // capability
-            $menu_slug,
-            array($this, 'webmaster_page_callback'));
-
-            $submenu[$menu_slug][] = array('<div id="webmaster-submenu-1">Settings</div>', 'manage_options', '#');
-            $submenu[$menu_slug][] = array('<div id="webmaster-submenu-2">Tutorial</div>', 'manage_options', 'https://wpsimplehacks.com/how-to-add-custom-admin-menu-items/'); 
-        }
-        function webmaster_page_callback() {
-            $htmlcontent = '<div class="wrap">';
-            $htmlcontent .= '<h1 class="wp-heading-inline">Settings</h1>';
-            $htmlcontent .= '<div class="notice is-dismissible updated">';
-            $htmlcontent .= '<p>';
-            $htmlcontent .= __( 'Nothing to see here! Yet...', 'webmaster' );
-            $htmlcontent .= '</p>';
-            $htmlcontent .= '</div></div>';
-            echo $htmlcontent;
         }
     }
 
