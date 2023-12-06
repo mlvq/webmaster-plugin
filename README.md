@@ -11,8 +11,12 @@ webmaster-plugin
 -assets
 --css
 ---webmaster-plugin.css //frontend
+---taxonomy-settings.css //admin
 --js
 ---webmaster-plugin.js //frontend
+---taxonomy-settings.js //admin
 -includes
 --activation.php
+--admin-pages.php
+--taxonomy-settings.php
 --catalog-post.php
