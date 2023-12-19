@@ -26,6 +26,7 @@ register_deactivation_hook( __FILE__, 'deactivate_webmaster_tools' );
 if (!class_exists('WEBMASTER')) :
     class WEBMASTER {
         public function __construct() {
+            require plugin_dir_path(__FILE__) . 'includes/make-single.php';
             require plugin_dir_path(__FILE__) . 'includes/activation.php';
             require plugin_dir_path(__FILE__) . 'includes/catalog-post.php';
             require plugin_dir_path(__FILE__) . 'includes/taxonomy-settings.php';

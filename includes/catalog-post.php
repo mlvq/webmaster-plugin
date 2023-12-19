@@ -51,7 +51,7 @@ function catalog_post_type() {
 		'can_export'            => true,
 		'has_archive'           => false,
 		'exclude_from_search'   => true,
-		'publicly_queryable'    => false,
+		'publicly_queryable'    => true,
 		'capability_type'       => 'page',
 		'show_in_rest'          => false,
 	);
@@ -94,7 +94,7 @@ function custom_taxonomy() {
 		'show_tagcloud'              => true,
 		'show_in_rest'               => false,
 	);
-	register_taxonomy( 'brand', array( 'catalog_type' ), $args );
+	register_taxonomy( 'brand', array( 'catalog_type', 'product' ), $args );
 
 }
 add_action( 'init', 'custom_taxonomy', 0 );
