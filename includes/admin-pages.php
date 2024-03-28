@@ -177,6 +177,13 @@ function webmaster_settings_woo_init() {
     'webmaster_settings_woo_section'
   );
   add_settings_field(
+    'webmaster_settings_register_guest_users',
+    'Create an account upon first purchase. Enable guest-purchases first.',
+    'webmaster_settings_woo_register_guest_users_cb',
+    'edit.php?post_type=catalog_type&page=webmaster&tab=woocommerce',
+    'webmaster_settings_woo_section'
+  );
+  add_settings_field(
     'webmaster_settings_disable_analytics',
     'Disable analytics in WooCommerce',
     'webmaster_settings_woo_disable_analytics_cb',
@@ -188,6 +195,7 @@ function webmaster_settings_woo_init() {
   register_setting('edit.php?post_type=catalog_type&page=webmaster&tab=woocommerce', 'webmaster_settings_hide_reviews');
   register_setting('edit.php?post_type=catalog_type&page=webmaster&tab=woocommerce', 'webmaster_settings_show_oos_last');
   register_setting('edit.php?post_type=catalog_type&page=webmaster&tab=woocommerce', 'webmaster_settings_404_display_featured');
+  register_setting('edit.php?post_type=catalog_type&page=webmaster&tab=woocommerce', 'webmaster_settings_register_guest_users');
   register_setting('edit.php?post_type=catalog_type&page=webmaster&tab=woocommerce', 'webmaster_settings_disable_analytics');
 
 }
@@ -210,6 +218,9 @@ function webmaster_settings_woo_show_oos_last_cb() {
 function webmaster_settings_woo_404_display_featured_cb() {
   echo '<input name="webmaster_settings_404_display_featured" id="webmaster_settings_404_display_featured" title="Show featured products instead of 404 page" type="checkbox" value="1" class="code" ' . checked( 1, get_option( 'webmaster_settings_404_display_featured' ), false ) . ' /> <label title="Show featured products instead of 404 page" for="webmaster_settings_404_display_featured">Enable</label>';
 }
+function webmaster_settings_woo_register_guest_users_cb() {
+  echo '<input name="webmaster_settings_register_guest_users" id="webmaster_settings_register_guest_users" title="Create an account upon first purchase. Enable guest-purchases first." type="checkbox" value="1" class="code" ' . checked( 1, get_option( 'webmaster_settings_register_guest_users' ), false ) . ' /> <label title="Create an account upon first purchase. Enable guest-purchases first." for="webmaster_settings_register_guest_users">Enable</label>';
+}
 function webmaster_settings_woo_disable_analytics_cb() {
   echo '<input name="webmaster_settings_disable_analytics" id="webmaster_settings_disable_analytics" title="Disable analytics in WooCommerce" type="checkbox" value="1" class="code" ' . checked( 1, get_option( 'webmaster_settings_disable_analytics' ), false ) . ' /> <label title="Disable analytics in WooCommerce" for="webmaster_settings_disable_analytics">Enable</label>';
 }
@@ -219,6 +230,7 @@ add_filter( 'woocommerce_product_categories_widget_args', 'hide_uncategorized_ca
 add_filter( 'woocommerce_product_tabs', 'remove_review_tab', 98 );
 add_action( 'woocommerce_product_query', 'out_of_stock_last', 999 );
 add_action( 'woocommerce_no_products_found', 'featured_products_on_not_found', 20 );
+add_action( 'woocommerce_thankyou', 'register_guest_users', 10, 1 );
 add_filter( 'woocommerce_admin_disabled', settings_disable_analytics() );
 /* Handle user-settings */
 function hide_uncategorized_cat_from_shop_page( $args ) {
@@ -250,6 +262,57 @@ function featured_products_on_not_found() {
     if (get_option('webmaster_settings_404_display_featured')) {
     echo '<h4>' . __( 'Sorry! 404: Not Found!', 'webmaster-plugin' ) . '</h4>';
     echo do_shortcode( '[products limit="4" visibility="featured"]' );
+  }
+}
+function register_guest_users( $order_id ) {
+  if (get_option('webmaster_settings_register_guest_users') && !is_user_logged_in()) {
+    $order = new WC_Order($order_id);
+  
+    //get the user email from the order
+    $order_email = $order->billing_email;
+      
+    // check if there are any users with the billing email as user or email
+    $email = email_exists( $order_email );  
+    $user = username_exists( $order_email );
+    
+    // if the UID is null, then it's a guest checkout
+    if( $user == false && $email == false ) {
+      
+      // random password with 12 chars
+      $random_password = wp_generate_password();
+      // create new user with email as username & newly created pw
+      $user_id = wp_create_user( $order_email, $random_password, $order_email );
+      //WC guest customer identification
+      update_user_meta( $user_id, 'guest', 'yes' );
+   
+      //user's billing data
+      update_user_meta( $user_id, 'billing_address_1', $order->billing_address_1 );
+      update_user_meta( $user_id, 'billing_address_2', $order->billing_address_2 );
+      update_user_meta( $user_id, 'billing_city', $order->billing_city );
+      update_user_meta( $user_id, 'billing_company', $order->billing_company );
+      update_user_meta( $user_id, 'billing_country', $order->billing_country );
+      update_user_meta( $user_id, 'billing_email', $order->billing_email );
+      update_user_meta( $user_id, 'billing_first_name', $order->billing_first_name );
+      update_user_meta( $user_id, 'billing_last_name', $order->billing_last_name );
+      update_user_meta( $user_id, 'billing_phone', $order->billing_phone );
+      update_user_meta( $user_id, 'billing_postcode', $order->billing_postcode );
+      update_user_meta( $user_id, 'billing_state', $order->billing_state );
+   
+      // user's shipping data
+      update_user_meta( $user_id, 'shipping_address_1', $order->shipping_address_1 );
+      update_user_meta( $user_id, 'shipping_address_2', $order->shipping_address_2 );
+      update_user_meta( $user_id, 'shipping_city', $order->shipping_city );
+      update_user_meta( $user_id, 'shipping_company', $order->shipping_company );
+      update_user_meta( $user_id, 'shipping_country', $order->shipping_country );
+      update_user_meta( $user_id, 'shipping_first_name', $order->shipping_first_name );
+      update_user_meta( $user_id, 'shipping_last_name', $order->shipping_last_name );
+      update_user_meta( $user_id, 'shipping_method', $order->shipping_method );
+      update_user_meta( $user_id, 'shipping_postcode', $order->shipping_postcode );
+      update_user_meta( $user_id, 'shipping_state', $order->shipping_state );
+      
+      // link past orders to this newly created customer
+      wc_update_new_customer_past_orders( $user_id );
+    }
   }
 }
 function settings_disable_analytics() {

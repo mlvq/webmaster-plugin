@@ -6,8 +6,8 @@ defined('ABSPATH') || exit;
 function catalog_post_type() {
 
 	$labels = array(
-		'name'                  => _x( 'Products', 'Post Type General Name', 'webmaster' ),
-		'singular_name'         => _x( 'Product Type', 'Post Type Singular Name', 'webmaster' ),
+		'name'                  => _x( 'Catalog products', 'Post Type General Name', 'webmaster' ),
+		'singular_name'         => _x( 'Catalog product', 'Post Type Singular Name', 'webmaster' ),
 		'menu_name'             => __( 'Catalog', 'webmaster' ),
 		'name_admin_bar'        => __( 'Catalog Product', 'webmaster' ),
 		'archives'              => __( 'Item Archives', 'webmaster' ),
@@ -35,11 +35,11 @@ function catalog_post_type() {
 		'filter_items_list'     => __( 'Filter items list', 'webmaster' ),
 	);
 	$args = array(
-		'label'                 => __( 'Catalog Product type', 'webmaster' ),
+		'label'                 => __( 'Catalog Product', 'webmaster' ),
 		'description'           => __( 'Catalog Product type description', 'webmaster' ),
 		'labels'                => $labels,
 		'supports'              => array( 'title', 'editor', 'thumbnail', 'revisions' ),
-		'taxonomies'            => array( 'brand' ),
+		'taxonomies'            => array( 'catalog_brand' ),
 		'hierarchical'          => false,
 		'public'                => true,
 		'show_ui'               => true,
@@ -49,7 +49,7 @@ function catalog_post_type() {
 		'show_in_admin_bar'     => true,
 		'show_in_nav_menus'     => true,
 		'can_export'            => true,
-		'has_archive'           => false,
+		'has_archive'           => true,
 		'exclude_from_search'   => true,
 		'publicly_queryable'    => true,
 		'capability_type'       => 'page',
@@ -63,9 +63,9 @@ add_action( 'init', 'catalog_post_type', 0 );
 function custom_taxonomy() {
 
 	$labels = array(
-		'name'                       => _x( 'Brands', 'Taxonomy General Name', 'webmaster' ),
-		'singular_name'              => _x( 'Brand', 'Taxonomy Singular Name', 'webmaster' ),
-		'menu_name'                  => __( 'Edit Brands', 'webmaster' ),
+		'name'                       => _x( 'Catalog Brands', 'Taxonomy General Name', 'webmaster' ),
+		'singular_name'              => _x( 'Catalog Brand', 'Taxonomy Singular Name', 'webmaster' ),
+		'menu_name'                  => __( 'Catalog Brands', 'webmaster' ),
 		'all_items'                  => __( 'All Items', 'webmaster' ),
 		'parent_item'                => __( 'Parent Item', 'webmaster' ),
 		'parent_item_colon'          => __( 'Parent Item:', 'webmaster' ),
@@ -94,7 +94,7 @@ function custom_taxonomy() {
 		'show_tagcloud'              => true,
 		'show_in_rest'               => false,
 	);
-	register_taxonomy( 'brand', array( 'catalog_type', 'product' ), $args );
+	register_taxonomy( 'catalog_brand', array( 'catalog_type' ), $args );
 
 }
 add_action( 'init', 'custom_taxonomy', 0 );

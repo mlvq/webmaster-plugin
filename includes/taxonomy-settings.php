@@ -14,7 +14,7 @@ function taxonomy_add_custom_field() {
     </div>
     <?php
 }
-add_action( 'brand_add_form_fields', 'taxonomy_add_custom_field', 10, 2 );
+add_action( 'catalog_brand_add_form_fields', 'taxonomy_add_custom_field', 10, 2 );
 
 function taxonomy_edit_custom_field($term) {
     $image = get_term_meta($term->term_id, 'brand_image', true);
@@ -42,15 +42,15 @@ function taxonomy_edit_custom_field($term) {
 
     <?php
 }
-add_action( 'brand_edit_form_fields', 'taxonomy_edit_custom_field', 10, 2 );
+add_action( 'catalog_brand_edit_form_fields', 'taxonomy_edit_custom_field', 10, 2 );
 
 function save_taxonomy_custom_meta_field( $term_id ) {
     if ( isset( $_POST['brand_image'] ) ) {
         update_term_meta($term_id, 'brand_image', $_POST['brand_image']);
     }
 }  
-add_action( 'edited_brand', 'save_taxonomy_custom_meta_field', 10, 2 );  
-add_action( 'create_brand', 'save_taxonomy_custom_meta_field', 10, 2 );
+add_action( 'edited_catalog_brand', 'save_taxonomy_custom_meta_field', 10, 2 );  
+add_action( 'create_catalog_brand', 'save_taxonomy_custom_meta_field', 10, 2 );
 
 function aw_include_script() {
  
